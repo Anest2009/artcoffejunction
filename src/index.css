@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary-green: #A3B18A;
+  --white: #FFFFFF;
+  --cream: #FFF5E1;
+}
+
+body {
+  @apply font-sans bg-cream-100 text-gray-800 min-h-screen;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Custom Neumorphic Component Classes */
+@layer components {
+  .btn-primary {
+    @apply bg-primary-300 hover:bg-primary-400 text-white py-4 px-8 rounded-full text-lg font-medium 
+           shadow-md transition duration-300 ease-in-out transform hover:scale-[1.02] 
+           active:scale-[0.98] focus:outline-none;
+  }
+
+  .btn-secondary {
+    @apply bg-cream-300 hover:bg-cream-400 text-primary-700 py-4 px-8 rounded-full text-lg font-medium 
+           shadow-md transition duration-300 ease-in-out transform hover:scale-[1.02] 
+           active:scale-[0.98] focus:outline-none;
+  }
+  
+  .card-neumorphic {
+    @apply bg-white rounded-2xl p-6 shadow-xl border border-gray-100;
+    box-shadow: 5px 5px 15px rgba(163, 177, 138, 0.15), 
+                -5px -5px 15px rgba(255, 255, 255, 0.9);
+  }
+  
+  .tab-item {
+    @apply px-6 py-3 text-lg font-medium relative transition-all duration-300 ease-in-out;
+  }
+  
+  .tab-active {
+    @apply text-primary-500 font-medium;
+  }
+  
+  .tab-inactive {
+    @apply text-gray-400;
+  }
+  
+  .tab-indicator {
+    @apply absolute bottom-0 left-0 h-0.5 bg-primary-400 transition-all duration-300 ease-out;
+  }
+  
+  .glass-panel {
+    @apply bg-white bg-opacity-70 backdrop-blur-md rounded-2xl border border-white border-opacity-20 p-6;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-cream-100;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-primary-200 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-primary-300;
+}

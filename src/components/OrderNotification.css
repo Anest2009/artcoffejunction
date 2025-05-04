@@ -1,0 +1,158 @@
+/* Order Notification Styles */
+.notification-toast {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  right: 1rem;
+  z-index: 1000;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.notification-toast.pending {
+  background-color: #fef3c7;
+  border: 1px solid #fcd34d;
+  color: #92400e;
+}
+
+.notification-toast.in-progress {
+  background-color: #dbeafe;
+  border: 1px solid #93c5fd;
+  color: #1e40af;
+}
+
+.notification-toast.completed {
+  background-color: #d1fae5;
+  border: 1px solid #6ee7b7;
+  color: #065f46;
+}
+
+.notification-toast.cancelled {
+  background-color: #fee2e2;
+  border: 1px solid #fca5a5;
+  color: #b91c1c;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.status-badge.pending {
+  background-color: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fcd34d;
+}
+
+.status-badge.in-progress {
+  background-color: #dbeafe;
+  color: #1e40af;
+  border: 1px solid #93c5fd;
+}
+
+.status-badge.completed {
+  background-color: #d1fae5;
+  color: #065f46;
+  border: 1px solid #6ee7b7;
+}
+
+.status-badge.cancelled {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
+}
+
+.status-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  margin-right: 0.75rem;
+}
+
+.status-icon.pending {
+  background-color: #fcd34d;
+  color: #92400e;
+}
+
+.status-icon.in-progress {
+  background-color: #93c5fd;
+  color: #1e40af;
+}
+
+.status-icon.completed {
+  background-color: #6ee7b7;
+  color: #065f46;
+}
+
+.status-icon.cancelled {
+  background-color: #fca5a5;
+  color: #b91c1c;
+}
+
+.order-status-tracker {
+  display: flex;
+  justify-content: space-between;
+  margin: 1.5rem 0;
+  position: relative;
+}
+
+.order-status-tracker::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #e5e7eb;
+  transform: translateY(-50%);
+  z-index: 0;
+}
+
+.status-step {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.status-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: #e5e7eb;
+  border: 2px solid #fff;
+  margin-bottom: 0.5rem;
+}
+
+.status-dot.active {
+  background-color: #3b82f6;
+}
+
+.status-dot.completed {
+  background-color: #10b981;
+}
+
+.status-label {
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-align: center;
+}
+
+.status-label.active {
+  color: #1f2937;
+  font-weight: 500;
+}
