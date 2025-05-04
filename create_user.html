@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Test User</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(to bottom right, #f7f2e5, #f0e6c9);
+      color: #4B2E2B;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .container {
+      max-width: 600px;
+      background-color: white;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      color: #4B2E2B;
+      margin-top: 0;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+    button {
+      background-color: #D4AF37;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 500;
+    }
+    button:hover {
+      background-color: #B89220;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 6px;
+    }
+    .success {
+      background-color: #DCFCE7;
+      color: #16A34A;
+    }
+    .error {
+      background-color: #FEE2E2;
+      color: #EF4444;
+    }
+    pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Create Café Staff User</h1>
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" placeholder="email@example.com" value="admin@cafe.com">
+    </div>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" placeholder="Minimum 6 characters" value="password123">
+    </div>
+    <div class="form-group">
+      <label for="name">Full Name</label>
+      <input type="text" id="name" placeholder="John Doe" value="Admin User">
+    </div>
+    <div class="form-group">
+      <label for="role">Role</label>
+      <select id="role">
+        <option value="admin">Administrator</option>
+        <option value="staff">Staff</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="counterType">Counter Type (for staff only)</label>
+      <select id="counterType">
+        <option value="">None (Admin)</option>
+        <option value="barista">Barista</option>
+        <option value="baker">Baker</option>
+        <option value="cashier">Cashier</option>
+      </select>
+    </div>
+    <button id="createButton">Create User</button>
+    <div id="result" class="result" style="display: none;"></div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const createButton = document.getElementById('createButton');
+      const resultDiv = document.getElementById('result');
+      
+      createButton.addEventListener('click', async function() {
+        // Get form values
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const name = document.getElementById('name').value;
+        const role = document.getElementById('role').value;
+        const counterType = document.getElementById('counterType').value;
+        
+        // Validate inputs
+        if (!email || !password || !name) {
+          showResult('Please fill in all required fields', false);
+          return;
+        }
+        
+        // Show loading state
+        createButton.disabled = true;
+        createButton.textContent = 'Creating...';
+        
+        try {
+          // Initialize Supabase client
+          const supabaseUrl = 'https://rbaxubhofbmplxpxqqdk.supabase.co';
+          const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJiYXh1YmhvZmJtcGx4cHhxcWRrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYyODM5NzMsImV4cCI6MjA2MTg1OTk3M30.mQcAvzLQPq1vCygZ9LxgtjCe8_WSOB_rO8yGxZwjARI';
+          const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+          
+          // Step 1: Create user in Supabase Auth
+          const { data: authData, error: authError } = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+              data: { name }
+            }
+          });
+          
+          if (authError) throw authError;
+          
+          // Step 2: Create user in users table
+          const { error: userError } = await supabase
+            .from('users')
+            .insert([
+              {
+                id: authData.user.id,
+                email: email,
+                name: name,
+                role: role,
+                counter_type: counterType || null,
+                created_at: new Date().toISOString()
+              }
+            ]);
+          
+          if (userError) throw userError;
+          
+          // Show success message
+          showResult(`
+            User created successfully!<br>
+            <strong>Email:</strong> ${email}<br>
+            <strong>Password:</strong> ${password}<br>
+            <strong>Role:</strong> ${role}<br>
+            ${counterType ? `<strong>Counter Type:</strong> ${counterType}<br>` : ''}
+            <br>
+            You can now log in with these credentials.
+          `, true);
+          
+        } catch (error) {
+          console.error('Error creating user:', error);
+          showResult(`Error creating user: ${error.message || error}`, false);
+        } finally {
+          // Reset button state
+          createButton.disabled = false;
+          createButton.textContent = 'Create User';
+        }
+      });
+      
+      function showResult(message, isSuccess) {
+        resultDiv.innerHTML = message;
+        resultDiv.style.display = 'block';
+        resultDiv.className = isSuccess ? 'result success' : 'result error';
+      }
+    });
+  </script>
+</body>
+</html>

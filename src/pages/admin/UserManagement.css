@@ -1,0 +1,130 @@
+.user-management-container {
+  min-height: 100vh;
+  background: linear-gradient(to bottom right, #f7f2e5, #f0e6c9);
+  padding: 2rem 1rem;
+}
+
+.user-management-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: 2rem;
+}
+
+.page-header h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-brown-800);
+  margin-bottom: 0.25rem;
+}
+
+.page-header p {
+  color: var(--color-gold-500);
+  font-weight: 500;
+}
+
+.user-management-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .user-management-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.add-user-card,
+.user-list-card {
+  padding: 1.5rem;
+}
+
+.add-user-card h2,
+.user-list-card h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-brown-800);
+  margin-bottom: 1.5rem;
+}
+
+.error-message {
+  background-color: #FEE2E2;
+  color: #EF4444;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.success-message {
+  background-color: #DCFCE7;
+  color: #16A34A;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-brown-800);
+  margin-bottom: 0.25rem;
+}
+
+.submit-button {
+  width: 100%;
+  margin-top: 1.5rem;
+}
+
+.user-list {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+th {
+  font-weight: 600;
+  color: var(--color-brown-800);
+}
+
+.role-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.role-badge.admin {
+  background-color: #FEF3C7;
+  color: #D97706;
+}
+
+.role-badge.staff {
+  background-color: #E0E7FF;
+  color: #4F46E5;
+}
+
+.loading-text,
+.no-data-message {
+  text-align: center;
+  color: var(--color-brown-800);
+  opacity: 0.6;
+  padding: 2rem 0;
+}

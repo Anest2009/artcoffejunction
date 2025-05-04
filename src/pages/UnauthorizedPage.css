@@ -1,0 +1,45 @@
+.unauthorized-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: linear-gradient(to bottom right, #f7f2e5, #f0e6c9);
+}
+
+.unauthorized-card {
+  max-width: 420px;
+  width: 100%;
+  padding: 2rem;
+  text-align: center;
+}
+
+.error-icon {
+  color: #EF4444;
+  margin-bottom: 1rem;
+}
+
+.error-icon svg {
+  width: 4rem;
+  height: 4rem;
+  margin: 0 auto;
+}
+
+.unauthorized-card h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-brown-800);
+  margin-bottom: 0.5rem;
+}
+
+.error-message {
+  color: var(--color-brown-800);
+  opacity: 0.8;
+  margin-bottom: 1.5rem;
+}
+
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}

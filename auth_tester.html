@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Supabase Auth Tester</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(to bottom right, #f7f2e5, #f0e6c9);
+      color: #4B2E2B;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .container {
+      max-width: 600px;
+      background-color: white;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      width: 100%;
+    }
+    h1 {
+      color: #4B2E2B;
+      margin-top: 0;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #D4AF37;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 500;
+      margin-right: 10px;
+    }
+    button:hover {
+      background-color: #B89220;
+    }
+    .secondary-button {
+      background-color: #4B2E2B;
+    }
+    .secondary-button:hover {
+      background-color: #3A2422;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 6px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    .success {
+      background-color: #DCFCE7;
+      color: #16A34A;
+    }
+    .error {
+      background-color: #FEE2E2;
+      color: #EF4444;
+    }
+    .info {
+      background-color: #E0F2FE;
+      color: #0284C7;
+    }
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    pre {
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Supabase Auth Tester</h1>
+    <p>This tool helps you test Supabase authentication directly.</p>
+    
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" value="test@cafe.com">
+    </div>
+    
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" value="password123">
+    </div>
+    
+    <div class="button-group">
+      <button id="signUpButton">Sign Up</button>
+      <button id="signInButton">Sign In</button>
+      <button id="signOutButton" class="secondary-button">Sign Out</button>
+    </div>
+    
+    <div class="button-group">
+      <button id="createUserTableButton">Create Users Table</button>
+      <button id="addToUserTableButton">Add to Users Table</button>
+      <button id="checkSessionButton">Check Session</button>
+    </div>
+    
+    <div id="result" class="result info" style="display: none;"></div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize Supabase client
+      const supabaseUrl = 'https://rbaxubhofbmplxpxqqdk.supabase.co';
+      const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJiYXh1YmhvZmJtcGx4cHhxcWRrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYyODM5NzMsImV4cCI6MjA2MTg1OTk3M30.mQcAvzLQPq1vCygZ9LxgtjCe8_WSOB_rO8yGxZwjARI';
+      const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+      
+      // Elements
+      const emailInput = document.getElementById('email');
+      const passwordInput = document.getElementById('password');
+      const signUpButton = document.getElementById('signUpButton');
+      const signInButton = document.getElementById('signInButton');
+      const signOutButton = document.getElementById('signOutButton');
+      const createUserTableButton = document.getElementById('createUserTableButton');
+      const addToUserTableButton = document.getElementById('addToUserTableButton');
+      const checkSessionButton = document.getElementById('checkSessionButton');
+      const resultDiv = document.getElementById('result');
+      
+      // Sign Up
+      signUpButton.addEventListener('click', async function() {
+        const email = emailInput.value;
+        const password = passwordInput.value;
+        
+        if (!email || !password) {
+          showResult('Please enter email and password', 'error');
+          return;
+        }
+        
+        try {
+          const { data, error } = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+              data: {
+                name: email.split('@')[0]
+              }
+            }
+          });
+          
+          if (error) throw error;
+          
+          showResult('Sign up successful!\n\nUser: ' + JSON.stringify(data.user, null, 2), 'success');
+        } catch (error) {
+          showResult('Sign up error: ' + error.message, 'error');
+        }
+      });
+      
+      // Sign In
+      signInButton.addEventListener('click', async function() {
+        const email = emailInput.value;
+        const password = passwordInput.value;
+        
+        if (!email || !password) {
+          showResult('Please enter email and password', 'error');
+          return;
+        }
+        
+        try {
+          const { data, error } = await supabase.auth.signInWithPassword({
+            email,
+            password
+          });
+          
+          if (error) throw error;
+          
+          showResult('Sign in successful!\n\nSession: ' + JSON.stringify(data.session, null, 2), 'success');
+        } catch (error) {
+          showResult('Sign in error: ' + error.message, 'error');
+        }
+      });
+      
+      // Sign Out
+      signOutButton.addEventListener('click', async function() {
+        try {
+          const { error } = await supabase.auth.signOut();
+          
+          if (error) throw error;
+          
+          showResult('Sign out successful!', 'success');
+        } catch (error) {
+          showResult('Sign out error: ' + error.message, 'error');
+        }
+      });
+      
+      // Create Users Table
+      createUserTableButton.addEventListener('click', async function() {
+        try {
+          const { error } = await supabase.rpc('execute_sql', {
+            sql_query: `
+              CREATE TABLE IF NOT EXISTS public.users (
+                id UUID PRIMARY KEY,
+                email TEXT NOT NULL,
+                name TEXT,
+                role TEXT NOT NULL DEFAULT 'staff',
+                counter_type TEXT,
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+                updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+              );
+            `
+          });
+          
+          if (error) throw error;
+          
+          showResult('Users table created successfully!', 'success');
+        } catch (error) {
+          showResult('Error creating users table: ' + error.message, 'error');
+        }
+      });
+      
+      // Add to Users Table
+      addToUserTableButton.addEventListener('click', async function() {
+        try {
+          // First get the current user
+          const { data: { user }, error: userError } = await supabase.auth.getUser();
+          
+          if (userError) throw userError;
+          if (!user) throw new Error('No authenticated user found');
+          
+          // Then add to users table
+          const { data, error } = await supabase
+            .from('users')
+            .insert([
+              {
+                id: user.id,
+                email: user.email,
+                name: user.user_metadata?.name || 'Café User',
+                role: 'admin',
+                counter_type: null
+              }
+            ])
+            .select();
+          
+          if (error) throw error;
+          
+          showResult('User added to users table!\n\nData: ' + JSON.stringify(data, null, 2), 'success');
+        } catch (error) {
+          showResult('Error adding to users table: ' + error.message, 'error');
+        }
+      });
+      
+      // Check Session
+      checkSessionButton.addEventListener('click', async function() {
+        try {
+          const { data: { user }, error } = await supabase.auth.getUser();
+          
+          if (error) throw error;
+          
+          if (user) {
+            showResult('Current session:\n\nUser: ' + JSON.stringify(user, null, 2), 'success');
+          } else {
+            showResult('No active session found', 'info');
+          }
+        } catch (error) {
+          showResult('Error checking session: ' + error.message, 'error');
+        }
+      });
+      
+      // Helper function to show results
+      function showResult(message, type) {
+        resultDiv.textContent = message;
+        resultDiv.style.display = 'block';
+        resultDiv.className = 'result ' + type;
+      }
+      
+      // Check initial session
+      checkSessionButton.click();
+    });
+  </script>
+</body>
+</html>

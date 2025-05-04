@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Staff Accounts</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(to bottom right, #f7f2e5, #f0e6c9);
+      color: #4B2E2B;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .container {
+      max-width: 800px;
+      background-color: white;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      width: 100%;
+    }
+    h1, h2 {
+      color: #4B2E2B;
+    }
+    h1 {
+      margin-top: 0;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #D4AF37;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 500;
+      margin-right: 10px;
+    }
+    button:hover {
+      background-color: #B89220;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 6px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    .success {
+      background-color: #DCFCE7;
+      color: #16A34A;
+    }
+    .error {
+      background-color: #FEE2E2;
+      color: #EF4444;
+    }
+    .info {
+      background-color: #E0F2FE;
+      color: #0284C7;
+    }
+    .staff-card {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+    .staff-card h3 {
+      margin-top: 0;
+      color: #D4AF37;
+    }
+    .staff-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Create Staff Accounts</h1>
+    <p>This tool will create three staff accounts for your café, one for each counter type.</p>
+    
+    <div class="staff-grid">
+      <div class="staff-card">
+        <h3>Coffee Counter Staff</h3>
+        <div class="form-group">
+          <label for="coffeeEmail">Email</label>
+          <input type="email" id="coffeeEmail" value="coffee@cafe.com">
+        </div>
+        <div class="form-group">
+          <label for="coffeePassword">Password</label>
+          <input type="password" id="coffeePassword" value="password123">
+        </div>
+        <div class="form-group">
+          <label for="coffeeName">Name</label>
+          <input type="text" id="coffeeName" value="Coffee Staff">
+        </div>
+      </div>
+      
+      <div class="staff-card">
+        <h3>Pastry Counter Staff</h3>
+        <div class="form-group">
+          <label for="pastryEmail">Email</label>
+          <input type="email" id="pastryEmail" value="pastry@cafe.com">
+        </div>
+        <div class="form-group">
+          <label for="pastryPassword">Password</label>
+          <input type="password" id="pastryPassword" value="password123">
+        </div>
+        <div class="form-group">
+          <label for="pastryName">Name</label>
+          <input type="text" id="pastryName" value="Pastry Staff">
+        </div>
+      </div>
+      
+      <div class="staff-card">
+        <h3>Bar Counter Staff</h3>
+        <div class="form-group">
+          <label for="barEmail">Email</label>
+          <input type="email" id="barEmail" value="bar@cafe.com">
+        </div>
+        <div class="form-group">
+          <label for="barPassword">Password</label>
+          <input type="password" id="barPassword" value="password123">
+        </div>
+        <div class="form-group">
+          <label for="barName">Name</label>
+          <input type="text" id="barName" value="Bar Staff">
+        </div>
+      </div>
+    </div>
+    
+    <button id="createAllButton">Create All Staff Accounts</button>
+    
+    <div id="result" class="result info" style="display: none;"></div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize Supabase client - FIXED VERSION
+      const supabaseUrl = 'https://rbaxubhofbmplxpxqqdk.supabase.co';
+      const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJiYXh1YmhvZmJtcGx4cHhxcWRrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYyODM5NzMsImV4cCI6MjA2MTg1OTk3M30.mQcAvzLQPq1vCygZ9LxgtjCe8_WSOB_rO8yGxZwjARI';
+      
+      // Properly initialize the Supabase client
+      const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+      
+      const createAllButton = document.getElementById('createAllButton');
+      const resultDiv = document.getElementById('result');
+      
+      // Create a single staff account
+      async function createStaffAccount(email, password, name, counterType) {
+        try {
+          // Step 1: Create user in Supabase Auth
+          const { data: authData, error: authError } = await supabaseClient.auth.signUp({
+            email,
+            password,
+            options: {
+              data: { name }
+            }
+          });
+          
+          if (authError) throw authError;
+          if (!authData.user) throw new Error('User creation failed');
+          
+          const userId = authData.user.id;
+          
+          // Step 2: Add user to users table
+          const { error: userError } = await supabaseClient
+            .from('users')
+            .insert([
+              {
+                id: userId,
+                email,
+                name,
+                role: 'staff',
+                counter_type: counterType,
+                created_at: new Date().toISOString()
+              }
+            ]);
+          
+          if (userError) throw userError;
+          
+          return {
+            success: true,
+            user: {
+              id: userId,
+              email,
+              name,
+              counterType
+            }
+          };
+        } catch (error) {
+          console.error(`Error creating ${counterType} staff:`, error);
+          return {
+            success: false,
+            error: error.message || 'Unknown error'
+          };
+        }
+      }
+      
+      // Create all staff accounts
+      createAllButton.addEventListener('click', async function() {
+        createAllButton.disabled = true;
+        createAllButton.textContent = 'Creating Accounts...';
+        resultDiv.style.display = 'none';
+        
+        try {
+          const results = {
+            coffee: await createStaffAccount(
+              document.getElementById('coffeeEmail').value,
+              document.getElementById('coffeePassword').value,
+              document.getElementById('coffeeName').value,
+              'coffee'
+            ),
+            pastry: await createStaffAccount(
+              document.getElementById('pastryEmail').value,
+              document.getElementById('pastryPassword').value,
+              document.getElementById('pastryName').value,
+              'pastry'
+            ),
+            bar: await createStaffAccount(
+              document.getElementById('barEmail').value,
+              document.getElementById('barPassword').value,
+              document.getElementById('barName').value,
+              'bar'
+            )
+          };
+          
+          // Format results
+          let message = 'Staff Account Creation Results:\n\n';
+          let allSuccess = true;
+          
+          for (const [type, result] of Object.entries(results)) {
+            if (result.success) {
+              message += `✅ ${type.toUpperCase()} STAFF: Created successfully\n`;
+              message += `   Email: ${result.user.email}\n`;
+              message += `   Password: ${document.getElementById(`${type}Password`).value}\n\n`;
+            } else {
+              allSuccess = false;
+              message += `❌ ${type.toUpperCase()} STAFF: Failed to create\n`;
+              message += `   Error: ${result.error}\n\n`;
+            }
+          }
+          
+          // Add login instructions
+          if (allSuccess) {
+            message += 'All staff accounts created successfully!\n\n';
+            message += 'To test the accounts:\n';
+            message += '1. Go to your café staff dashboard login page\n';
+            message += '2. Log in with each account\'s email and password\n';
+            message += '3. Each staff member should only see orders for their counter type\n';
+          }
+          
+          showResult(message, allSuccess ? 'success' : 'error');
+        } catch (error) {
+          showResult('Error creating staff accounts: ' + error.message, 'error');
+        } finally {
+          createAllButton.disabled = false;
+          createAllButton.textContent = 'Create All Staff Accounts';
+        }
+      });
+      
+      // Helper function to show results
+      function showResult(message, type) {
+        resultDiv.textContent = message;
+        resultDiv.style.display = 'block';
+        resultDiv.className = 'result ' + type;
+      }
+    });
+  </script>
+</body>
+</html>

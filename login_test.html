@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Café Login Test</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(to bottom right, #f7f2e5, #f0e6c9);
+      color: #4B2E2B;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .container {
+      max-width: 600px;
+      background-color: white;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      width: 100%;
+    }
+    h1, h2 {
+      color: #4B2E2B;
+    }
+    h1 {
+      margin-top: 0;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #D4AF37;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 500;
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+    button:hover {
+      background-color: #B89220;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 6px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    .success {
+      background-color: #DCFCE7;
+      color: #16A34A;
+    }
+    .error {
+      background-color: #FEE2E2;
+      color: #EF4444;
+    }
+    .info {
+      background-color: #E0F2FE;
+      color: #0284C7;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Café Login Test</h1>
+    <p>This tool will help diagnose and fix login issues with your café staff dashboard.</p>
+    
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" value="admin@cafe.com">
+    </div>
+    
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" value="password123">
+    </div>
+    
+    <div class="actions">
+      <button id="testLoginButton">Test Login</button>
+      <button id="createUserButton">Create User</button>
+      <button id="checkUserButton">Check User in Database</button>
+      <button id="fixUserButton">Fix User Entry</button>
+    </div>
+    
+    <div id="result" class="result info" style="display: none;"></div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize Supabase client
+      const supabaseUrl = 'https://rbaxubhofbmplxpxqqdk.supabase.co';
+      const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJiYXh1YmhvZmJtcGx4cHhxcWRrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYyODM5NzMsImV4cCI6MjA2MTg1OTk3M30.mQcAvzLQPq1vCygZ9LxgtjCe8_WSOB_rO8yGxZwjARI';
+      
+      // Properly initialize the Supabase client
+      const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+      
+      const emailInput = document.getElementById('email');
+      const passwordInput = document.getElementById('password');
+      const testLoginButton = document.getElementById('testLoginButton');
+      const createUserButton = document.getElementById('createUserButton');
+      const checkUserButton = document.getElementById('checkUserButton');
+      const fixUserButton = document.getElementById('fixUserButton');
+      const resultDiv = document.getElementById('result');
+      
+      // Test login
+      testLoginButton.addEventListener('click', async function() {
+        const email = emailInput.value;
+        const password = passwordInput.value;
+        
+        if (!email || !password) {
+          showResult('Please enter email and password', 'error');
+          return;
+        }
+        
+        try {
+          showResult('Attempting to sign in...', 'info');
+          
+          const { data, error } = await supabaseClient.auth.signInWithPassword({
+            email,
+            password
+          });
+          
+          if (error) throw error;
+          
+          showResult(`Login successful!\n\nUser: ${data.user.email}\nSession expires: ${new Date(data.session.expires_at * 1000).toLocaleString()}`, 'success');
+        } catch (error) {
+          showResult(`Login failed: ${error.message}`, 'error');
+        }
+      });
+      
+      // Create user
+      createUserButton.addEventListener('click', async function() {
+        const email = emailInput.value;
+        const password = passwordInput.value;
+        
+        if (!email || !password) {
+          showResult('Please enter email and password', 'error');
+          return;
+        }
+        
+        try {
+          showResult('Creating user in Supabase Auth...', 'info');
+          
+          const { data, error } = await supabaseClient.auth.signUp({
+            email,
+            password,
+            options: {
+              data: {
+                name: email.split('@')[0]
+              }
+            }
+          });
+          
+          if (error) throw error;
+          
+          showResult(`User created in Auth system!\n\nUser ID: ${data.user.id}\nEmail: ${data.user.email}`, 'success');
+        } catch (error) {
+          showResult(`User creation failed: ${error.message}`, 'error');
+        }
+      });
+      
+      // Check user in database
+      checkUserButton.addEventListener('click', async function() {
+        const email = emailInput.value;
+        
+        if (!email) {
+          showResult('Please enter an email', 'error');
+          return;
+        }
+        
+        try {
+          // First check in Auth
+          showResult('Checking user in Auth system...', 'info');
+          
+          const { data: authData, error: authError } = await supabaseClient.auth.getUser();
+          
+          if (authError) {
+            showResult(`Not logged in. Please log in first.`, 'error');
+            return;
+          }
+          
+          // Then check in users table
+          const { data: userData, error: userError } = await supabaseClient
+            .from('users')
+            .select('*')
+            .eq('email', email);
+          
+          if (userError) throw userError;
+          
+          if (userData && userData.length > 0) {
+            showResult(`User found in database:\n\n${JSON.stringify(userData[0], null, 2)}`, 'success');
+          } else {
+            showResult(`User not found in users table. Need to create an entry.`, 'error');
+          }
+        } catch (error) {
+          showResult(`Error checking user: ${error.message}`, 'error');
+        }
+      });
+      
+      // Fix user entry
+      fixUserButton.addEventListener('click', async function() {
+        const email = emailInput.value;
+        
+        if (!email) {
+          showResult('Please enter an email', 'error');
+          return;
+        }
+        
+        try {
+          // First get the auth user
+          showResult('Getting current auth user...', 'info');
+          
+          const { data: authData, error: authError } = await supabaseClient.auth.getUser();
+          
+          if (authError) {
+            showResult(`Not logged in. Please log in first with Test Login.`, 'error');
+            return;
+          }
+          
+          const user = authData.user;
+          
+          // Check if user exists in users table
+          const { data: userData, error: userError } = await supabaseClient
+            .from('users')
+            .select('*')
+            .eq('id', user.id);
+          
+          if (userError) throw userError;
+          
+          if (userData && userData.length > 0) {
+            showResult(`User already exists in users table. No fix needed.`, 'info');
+          } else {
+            // Create user in users table
+            showResult('Creating user entry in users table...', 'info');
+            
+            const { error: insertError } = await supabaseClient
+              .from('users')
+              .insert([
+                {
+                  id: user.id,
+                  email: user.email,
+                  name: user.user_metadata?.name || 'Café User',
+                  role: 'admin',  // Default to admin for manual fixes
+                  counter_type: null,
+                  created_at: new Date().toISOString()
+                }
+              ]);
+            
+            if (insertError) throw insertError;
+            
+            showResult(`User entry created in users table!\n\nYou should now be able to log in to your application.`, 'success');
+          }
+        } catch (error) {
+          showResult(`Error fixing user: ${error.message}`, 'error');
+        }
+      });
+      
+      // Helper function to show results
+      function showResult(message, type) {
+        resultDiv.textContent = message;
+        resultDiv.style.display = 'block';
+        resultDiv.className = 'result ' + type;
+      }
+      
+      // Check initial session
+      (async function() {
+        try {
+          const { data: { user }, error } = await supabaseClient.auth.getUser();
+          
+          if (!error && user) {
+            showResult(`Currently logged in as: ${user.email}`, 'info');
+          } else {
+            showResult('Not currently logged in. Use the buttons above to test or fix login.', 'info');
+          }
+        } catch (e) {
+          console.error('Error checking session:', e);
+        }
+      })();
+    });
+  </script>
+</body>
+</html>
